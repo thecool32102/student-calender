@@ -3,6 +3,7 @@ import sqlite3
 import secrets
 from datetime import date, datetime, timedelta
 from functools import wraps
+from init_db import init_db
 
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, abort
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -895,4 +896,5 @@ def edit_task(task_id):
 
 
 if __name__ == "__main__":
+    init_db()
     app.run(debug=not is_production)
