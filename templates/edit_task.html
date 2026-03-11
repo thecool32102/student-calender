@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Aufgabe bearbeiten{% endblock %}
+
+{% block content %}
+    <h2>Aufgabe bearbeiten</h2>
+
+    <div class="form-card">
+        <form action="{{ url_for('edit_task', task_id=task['id']) }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <label for="title">Titel:</label>
+            <input type="text" id="title" name="title" value="{{ task['title'] }}" required>
+
+            <label for="description">Beschreibung:</label>
+            <input type="text" id="description" name="description" value="{{ task['description'] }}">
+
+            <label for="due_date">Fälligkeitsdatum:</label>
+            <input type="date" id="due_date" name="due_date" value="{{ task['due_date'] }}">
+
+            <label for="priority">Priorität:</label>
+            <select id="priority" name="priority">
+                <option value="niedrig" {% if task["priority"] == "niedrig" %}selected{% endif %}>niedrig</option>
+                <option value="mittel" {% if task["priority"] == "mittel" %}selected{% endif %}>mittel</option>
+                <option value="hoch" {% if task["priority"] == "hoch" %}selected{% endif %}>hoch</option>
+            </select>
+
+            <label for="status">Status:</label>
+            <select id="status" name="status">
+                <option value="offen" {% if task["status"] == "offen" %}selected{% endif %}>offen</option>
+                <option value="in Bearbeitung" {% if task["status"] == "in Bearbeitung" %}selected{% endif %}>in Bearbeitung</option>
+                <option value="fertig" {% if task["status"] == "fertig" %}selected{% endif %}>fertig</option>
+            </select>
+
+            <label for="subject_id">Fach:</label>
+            <select id="subject_id" name="subject_id" required>
+                <option value="">Bitte wählen</option>
+                {% for subject in subjects %}
+                    <option value="{{ subject['id'] }}" {% if subject["id"] == task["subject_id"] %}selected{% endif %}>
+                        {{ subject["name"] }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <div class="button-row top-space">
+                <button type="submit">Änderungen speichern</button>
+                <a class="button-link" href="{{ url_for('tasks') }}">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

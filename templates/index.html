@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <h2>Dashboard</h2>
+    <p>Heute: {{ today }}</p>
+
+    <div class="dashboard-grid">
+        <div class="card">
+            <h3>Offen</h3>
+            <p class="big-number">{{ open_count }}</p>
+        </div>
+
+        <div class="card">
+            <h3>In Bearbeitung</h3>
+            <p class="big-number">{{ in_progress_count }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Fertig</h3>
+            <p class="big-number">{{ done_count }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Heute fällig</h3>
+            <p class="big-number">{{ today_count }}</p>
+        </div>
+
+        <div class="card warning">
+            <h3>Überfällig</h3>
+            <p class="big-number">{{ overdue_count }}</p>
+        </div>
+    </div>
+
+    <h3>Heute fällige Aufgaben</h3>
+    {% if due_today_tasks %}
+        <ul class="task-list">
+            {% for task in due_today_tasks %}
+                <li class="task-item priority-{{ task['priority'] }}">
+                    <strong>{{ task["title"] }}</strong><br>
+                    Fach: {{ task["subject_name"] or "Kein Fach" }}<br>
+                    Status: {{ task["status"] }}<br>
+                    Priorität: {{ task["priority"] }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Heute ist nichts fällig.</p>
+    {% endif %}
+
+    <h3>Überfällige Aufgaben</h3>
+    {% if overdue_tasks %}
+        <ul class="task-list">
+            {% for task in overdue_tasks %}
+                <li class="task-item overdue-task priority-{{ task['priority'] }}">
+                    <strong>{{ task["title"] }}</strong><br>
+                    Fach: {{ task["subject_name"] or "Kein Fach" }}<br>
+                    Fällig: {{ task["due_date"] }}<br>
+                    Status: {{ task["status"] }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Keine überfälligen Aufgaben.</p>
+    {% endif %}
+
+    <h3>Alle Aufgaben</h3>
+    {% if tasks %}
+        <ul class="task-list">
+            {% for task in tasks %}
+                <li class="task-item priority-{{ task['priority'] }}">
+                    <strong>{{ task["title"] }}</strong><br>
+                    Fach: {{ task["subject_name"] or "Kein Fach" }}<br>
+                    Beschreibung: {{ task["description"] }}<br>
+                    Fällig: {{ task["due_date"] }}<br>
+                    Priorität: {{ task["priority"] }}<br>
+                    Status: {{ task["status"] }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Noch keine Aufgaben vorhanden.</p>
+    {% endif %}
+{% endblock %}

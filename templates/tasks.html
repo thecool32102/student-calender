@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Aufgaben{% endblock %}
+
+{% block content %}
+    <h2>Aufgaben verwalten</h2>
+
+    <div class="form-card">
+        <h3>Neue Aufgabe hinzufügen</h3>
+
+        <form action="{{ url_for('tasks') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <label for="title">Titel:</label>
+            <input type="text" id="title" name="title" required>
+
+            <label for="description">Beschreibung:</label>
+            <input type="text" id="description" name="description">
+
+            <label for="due_date">Fälligkeitsdatum:</label>
+            <input type="date" id="due_date" name="due_date">
+
+            <label for="priority">Priorität:</label>
+            <select id="priority" name="priority">
+                <option value="niedrig">niedrig</option>
+                <option value="mittel" selected>mittel</option>
+                <option value="hoch">hoch</option>
+            </select>
+
+            <label for="status">Status:</label>
+            <select id="status" name="status">
+                <option value="offen" selected>offen</option>
+                <option value="in Bearbeitung">in Bearbeitung</option>
+                <option value="fertig">fertig</option>
+            </select>
+
+            <label for="subject_id">Fach:</label>
+            <select id="subject_id" name="subject_id" required>
+                <option value="">Bitte wählen</option>
+                {% for subject in subjects %}
+                    <option value="{{ subject['id'] }}">{{ subject["name"] }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">Aufgabe speichern</button>
+        </form>
+    </div>
+
+    <div class="form-card">
+        <h3>Filter</h3>
+
+        <form action="{{ url_for('tasks') }}" method="GET">
+            <label for="filter_subject_id">Fach:</label>
+            <select id="filter_subject_id" name="subject_id">
+                <option value="">Alle</option>
+                {% for subject in subjects %}
+                    <option value="{{ subject['id'] }}"
+                        {% if selected_subject_id == subject['id']|string %}selected{% endif %}>
+                        {{ subject["name"] }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label for="filter_status">Status:</label>
+            <select id="filter_status" name="status">
+                <option value="">Alle</option>
+                <option value="offen" {% if selected_status == "offen" %}selected{% endif %}>offen</option>
+                <option value="in Bearbeitung" {% if selected_status == "in Bearbeitung" %}selected{% endif %}>in Bearbeitung</option>
+                <option value="fertig" {% if selected_status == "fertig" %}selected{% endif %}>fertig</option>
+            </select>
+
+            <label for="filter_priority">Priorität:</label>
+            <select id="filter_priority" name="priority">
+                <option value="">Alle</option>
+                <option value="niedrig" {% if selected_priority == "niedrig" %}selected{% endif %}>niedrig</option>
+                <option value="mittel" {% if selected_priority == "mittel" %}selected{% endif %}>mittel</option>
+                <option value="hoch" {% if selected_priority == "hoch" %}selected{% endif %}>hoch</option>
+            </select>
+
+            <label for="sort">Sortierung:</label>
+            <select id="sort" name="sort">
+                <option value="due_date_asc" {% if selected_sort == "due_date_asc" %}selected{% endif %}>Datum aufsteigend</option>
+                <option value="due_date_desc" {% if selected_sort == "due_date_desc" %}selected{% endif %}>Datum absteigend</option>
+                <option value="title_asc" {% if selected_sort == "title_asc" %}selected{% endif %}>Titel A-Z</option>
+            </select>
+
+            <div class="button-row">
+                <button type="submit">Filter anwenden</button>
+                <a class="button-link" href="{{ url_for('tasks') }}">Zurücksetzen</a>
+            </div>
+        </form>
+    </div>
+
+    <h3>Gespeicherte Aufgaben</h3>
+
+    {% if tasks %}
+        <ul class="task-list">
+            {% for task in tasks %}
+                <li class="task-item priority-{{ task['priority'] }}">
+                    <strong>{{ task["title"] }}</strong><br>
+                    Beschreibung: {{ task["description"] }}<br>
+                    Fach: {{ task["subject_name"] or "Kein Fach" }}<br>
+                    Fällig am: {{ task["due_date"] }}<br>
+                    Priorität: {{ task["priority"] }}<br>
+                    Status: {{ task["status"] }}<br>
+
+                    <div class="button-row top-space">
+                        <a class="button-link" href="{{ url_for('edit_task', task_id=task['id']) }}">Bearbeiten</a>
+
+                        <form action="{{ url_for('delete_task', task_id=task['id']) }}" method="POST" class="inline-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <button type="submit" class="danger-button">Löschen</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Keine Aufgaben passen zu diesem Filter.</p>
+    {% endif %}
+{% endblock %}

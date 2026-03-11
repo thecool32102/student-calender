@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Fächer{% endblock %}
+
+{% block content %}
+    <h2>Fächer verwalten</h2>
+
+    <div class="form-card">
+        <form action="{{ url_for('subjects') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <label for="name">Fachname:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="color">Farbe:</label>
+            <input type="text" id="color" name="color" placeholder="z. B. blau">
+
+            <button type="submit">Fach speichern</button>
+        </form>
+    </div>
+
+    <h3>Gespeicherte Fächer</h3>
+
+    {% if subjects %}
+        <ul class="task-list">
+            {% for subject in subjects %}
+                <li class="task-item">
+                    <strong>{{ subject["name"] }}</strong>
+                    {% if subject["color"] %}
+                        <br>Farbe: {{ subject["color"] }}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Noch keine Fächer vorhanden.</p>
+    {% endif %}
+{% endblock %}
